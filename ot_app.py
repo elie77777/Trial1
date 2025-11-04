@@ -1,55 +1,9 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import gspread
 from google.oauth2 import service_account
 from datetime import datetime
 
 st.title("Overtime Tracker")
-
-# Inyectar JavaScript para prevenir el teclado móvil
-components.html("""
-<script>
-(function() {
-    function disableKeyboard() {
-        // Esperar a que los elementos se carguen
-        setTimeout(function() {
-            // Seleccionar todos los inputs dentro de selectbox
-            const inputs = document.querySelectorAll('input[aria-autocomplete="list"]');
-            
-            inputs.forEach(function(input) {
-                // Prevenir que aparezca el teclado
-                input.setAttribute('readonly', 'readonly');
-                input.setAttribute('inputmode', 'none');
-                input.style.caretColor = 'transparent';
-                
-                // Prevenir el foco que activa el teclado
-                input.addEventListener('touchstart', function(e) {
-                    this.blur();
-                    setTimeout(() => this.click(), 10);
-                }, true);
-                
-                input.addEventListener('focus', function(e) {
-                    this.setAttribute('readonly', 'readonly');
-                }, true);
-            });
-        }, 100);
-    }
-    
-    // Ejecutar al cargar
-    disableKeyboard();
-    
-    // Ejecutar cada vez que Streamlit actualice la página
-    setInterval(disableKeyboard, 500);
-    
-    // Observer para detectar cambios en el DOM
-    const observer = new MutationObserver(disableKeyboard);
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-})();
-</script>
-""", height=0)
 
 # Lista de agentes
 agents = ["Eliecid", "David", "Jhordan", "Brayan", "Luis", "Andrés", "Julio"]
@@ -58,24 +12,30 @@ agent = st.selectbox("Select Agent", agents)
 # Campo de fecha
 date = st.date_input("Date", value=datetime.today(), key="date_picker", help="Select a date")
 
-# Función para selector de tiempo estilo despertador
+# Función para selector de tiempo con number_input (no muestra teclado alfabético)
 def time_picker(label, key_prefix):
     col1, col2 = st.columns(2)
     with col1:
-        hour = st.selectbox(
+        hour = st.number_input(
             f"{label} - Hour",
-            options=list(range(0, 24)),
-            format_func=lambda x: f"{x:02d}",
+            min_value=0,
+            max_value=23,
+            value=0,
+            step=1,
+            format="%02d",
             key=f"{key_prefix}_hour"
         )
     with col2:
-        minute = st.selectbox(
+        minute = st.number_input(
             f"{label} - Minute",
-            options=list(range(0, 60)),
-            format_func=lambda x: f"{x:02d}",
+            min_value=0,
+            max_value=59,
+            value=0,
+            step=1,
+            format="%02d",
             key=f"{key_prefix}_minute"
         )
-    return datetime.strptime(f"{hour:02d}:{minute:02d}", "%H:%M").time()
+    return datetime.strptime(f"{int(hour):02d}:{int(minute):02d}", "%H:%M").time()
 
 # Selectores de tiempo
 st.subheader("From Time")
