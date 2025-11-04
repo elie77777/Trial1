@@ -1,53 +1,55 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import gspread
 from google.oauth2 import service_account
 from datetime import datetime
 
-# CSS para evitar que aparezca el teclado en móviles
-st.markdown("""
-<style>
-    /* Evitar que aparezca el teclado en los selectbox */
-    [data-baseweb="select"] input {
-        readonly: readonly;
-        pointer-events: none;
-        caret-color: transparent;
-    }
-    
-    /* Alternativa más agresiva si la anterior no funciona */
-    [data-baseweb="select"] input,
-    div[data-baseweb="select"] input[type="text"] {
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        cursor: pointer !important;
-    }
-    
-    /* Ocultar el cursor en los inputs de selectbox */
-    [data-baseweb="select"] input:focus {
-        caret-color: transparent !important;
-    }
-</style>
+st.title("Overtime Tracker")
 
+# Inyectar JavaScript para prevenir el teclado móvil
+components.html("""
 <script>
-    // Script adicional para forzar readonly en los inputs de selectbox
-    document.addEventListener('DOMContentLoaded', function() {
-        const observer = new MutationObserver(function(mutations) {
-            document.querySelectorAll('[data-baseweb="select"] input').forEach(function(input) {
+(function() {
+    function disableKeyboard() {
+        // Esperar a que los elementos se carguen
+        setTimeout(function() {
+            // Seleccionar todos los inputs dentro de selectbox
+            const inputs = document.querySelectorAll('input[aria-autocomplete="list"]');
+            
+            inputs.forEach(function(input) {
+                // Prevenir que aparezca el teclado
                 input.setAttribute('readonly', 'readonly');
                 input.setAttribute('inputmode', 'none');
+                input.style.caretColor = 'transparent';
+                
+                // Prevenir el foco que activa el teclado
+                input.addEventListener('touchstart', function(e) {
+                    this.blur();
+                    setTimeout(() => this.click(), 10);
+                }, true);
+                
+                input.addEventListener('focus', function(e) {
+                    this.setAttribute('readonly', 'readonly');
+                }, true);
             });
-        });
-        
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
+        }, 100);
+    }
+    
+    // Ejecutar al cargar
+    disableKeyboard();
+    
+    // Ejecutar cada vez que Streamlit actualice la página
+    setInterval(disableKeyboard, 500);
+    
+    // Observer para detectar cambios en el DOM
+    const observer = new MutationObserver(disableKeyboard);
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
     });
+})();
 </script>
-""", unsafe_allow_html=True)
-
-st.title("Overtime Tracker")
+""", height=0)
 
 # Lista de agentes
 agents = ["Eliecid", "David", "Jhordan", "Brayan", "Luis", "Andrés", "Julio"]
