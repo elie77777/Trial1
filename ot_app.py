@@ -15,25 +15,25 @@ date = st.date_input("Date", value=datetime.today(), key="date_picker", help="Se
 # Función para selector de tiempo estilo despertador
 def time_picker(label, key_prefix):
     st.write(f"**{label}**")
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns(2)
     with col1:
+        st.markdown("**Hour**")
         hour = st.selectbox(
-            "Hour",
+            "h",
             options=list(range(0, 24)),
             format_func=lambda x: f"{x:02d}",
             key=f"{key_prefix}_hour",
             label_visibility="collapsed"
         )
-        st.caption("Hour")
     with col2:
+        st.markdown("**Minute**")
         minute = st.selectbox(
-            "Minute",
+            "m",
             options=list(range(0, 60)),
             format_func=lambda x: f"{x:02d}",
             key=f"{key_prefix}_minute",
             label_visibility="collapsed"
         )
-        st.caption("Minute")
     return datetime.strptime(f"{hour:02d}:{minute:02d}", "%H:%M").time()
 
 # Selectores de tiempo
