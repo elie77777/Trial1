@@ -3,6 +3,50 @@ import gspread
 from google.oauth2 import service_account
 from datetime import datetime
 
+# CSS para evitar que aparezca el teclado en móviles
+st.markdown("""
+<style>
+    /* Evitar que aparezca el teclado en los selectbox */
+    [data-baseweb="select"] input {
+        readonly: readonly;
+        pointer-events: none;
+        caret-color: transparent;
+    }
+    
+    /* Alternativa más agresiva si la anterior no funciona */
+    [data-baseweb="select"] input,
+    div[data-baseweb="select"] input[type="text"] {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        cursor: pointer !important;
+    }
+    
+    /* Ocultar el cursor en los inputs de selectbox */
+    [data-baseweb="select"] input:focus {
+        caret-color: transparent !important;
+    }
+</style>
+
+<script>
+    // Script adicional para forzar readonly en los inputs de selectbox
+    document.addEventListener('DOMContentLoaded', function() {
+        const observer = new MutationObserver(function(mutations) {
+            document.querySelectorAll('[data-baseweb="select"] input').forEach(function(input) {
+                input.setAttribute('readonly', 'readonly');
+                input.setAttribute('inputmode', 'none');
+            });
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+</script>
+""", unsafe_allow_html=True)
+
 st.title("Overtime Tracker")
 
 # Lista de agentes
