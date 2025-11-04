@@ -14,30 +14,29 @@ date = st.date_input("Date", value=datetime.today(), key="date_picker", help="Se
 
 # Función para selector de tiempo estilo despertador
 def time_picker(label, key_prefix):
-    st.write(f"**{label}**")
-    col1, col2, col3 = st.columns([2, 2, 1])
+    col1, col2 = st.columns(2)
     with col1:
         hour = st.selectbox(
-            "Hour",
+            f"{label} - Hour",
             options=list(range(0, 24)),
             format_func=lambda x: f"{x:02d}",
-            key=f"{key_prefix}_hour",
-            label_visibility="collapsed"
+            key=f"{key_prefix}_hour"
         )
     with col2:
         minute = st.selectbox(
-            "Minute",
+            f"{label} - Minute",
             options=list(range(0, 60)),
             format_func=lambda x: f"{x:02d}",
-            key=f"{key_prefix}_minute",
-            label_visibility="collapsed"
+            key=f"{key_prefix}_minute"
         )
     return datetime.strptime(f"{hour:02d}:{minute:02d}", "%H:%M").time()
 
 # Selectores de tiempo
-from_time = time_picker("From Time", "from")
+st.subheader("From Time")
+from_time = time_picker("From", "from")
 
-to_time = time_picker("To Time", "to")
+st.subheader("To Time")
+to_time = time_picker("To", "to")
 
 reason = st.text_input("Reason", value="Scheduled OT")
 
